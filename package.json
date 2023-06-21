@@ -1,0 +1,39 @@
+{
+  "name": "event-management-api",
+  "version": "1.0.0",
+  "description": "An API that handles event management",
+  "main": "src/app.ts",
+  "scripts": {
+    "start": "nodemon src/app.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --collect-coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkhatri7/event-management-api.git"
+  },
+  "type": "module",
+  "author": "Neil Khatri",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.2",
+    "@types/node": "^20.3.1",
+    "@types/pg": "^8.10.2",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "eslint": "^8.43.0",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
+  }
+}

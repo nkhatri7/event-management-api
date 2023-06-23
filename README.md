@@ -51,7 +51,7 @@ CREATE TABLE event (
 ```
 
 ### Environment Variables
-Create a `.env` file in the root directory and create the variable `PORT` and assign it to your preferred port. The default is 3000.
+Create a `.env` file and copy the keys from `.env.template` and fill out the missing values.
 
 ### Server
 First install the dependencies and then start the server!

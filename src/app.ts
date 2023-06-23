@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { pool } from "./config/setup";
 
 dotenv.config();
 

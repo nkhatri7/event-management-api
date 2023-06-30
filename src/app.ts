@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("api/v1/auth", authRouter);
+app.use("/api/v1/auth", authRouter);
 
 const port: string | number = process.env.PORT || 3000;
 

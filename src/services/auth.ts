@@ -31,8 +31,8 @@ export const checkAccountExists = async (email: string): Promise<boolean> => {
     text: "SELECT * FROM customer WHERE email = $1",
     values: [email],
   };
-  const response = await pool.query(query);
-  return response.rowCount > 0;
+  const queryResult = await pool.query(query);
+  return queryResult.rowCount > 0;
 };
 
 /**
@@ -59,7 +59,7 @@ export const createUser = async (
  * @param queryResult The query result from the Postgres query.
  * @returns A user object.
  */
-const getUserFromQueryResult = (queryResult: QueryResult): User => {
+export const getUserFromQueryResult = (queryResult: QueryResult): User => {
   const queryResultRow = queryResult.rows[0];
   const id = queryResultRow["id"];
   const firstName = queryResultRow["first_name"];

@@ -16,12 +16,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "rootDir": "./src",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
   },
   "include": [
     "**/*.ts",

@@ -19,11 +19,11 @@ export const handleRegistration = async (req: Request, res: Response) => {
     if (!firstName || !lastName || !email || !password) {
       throw new StatusError(400, "Missing registration details");
     }
-    const encryptedPassword = await encryptPassword(password);
     const accountExists = await checkAccountExists(email);
     if (accountExists) {
       throw new StatusError(400, "Account with provided email already exists");
     }
+    const encryptedPassword = await encryptPassword(password);
     const user = await createUser({
       firstName,
       lastName,

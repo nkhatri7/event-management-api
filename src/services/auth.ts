@@ -1,7 +1,8 @@
-import { genSalt, hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import { QueryConfig, QueryResult } from "pg";
 import { pool } from "../config/database";
 import { User } from "../models/User";
+import { StatusError } from "../utils/StatusError";
 
 export interface RegistrationDetails {
   firstName: string | undefined;
@@ -10,14 +11,16 @@ export interface RegistrationDetails {
   password: string | undefined;
 }
 
+export type LoginDetails = Pick<RegistrationDetails, "email" | "password">;
+
 /**
  * Encrypts the given password.
  * @param password The password to be encrypted.
  * @returns The encrypted password.
  */
 export const encryptPassword = async (password: string): Promise<string> => {
-  const salt = await genSalt(10);
-  return await hash(password, salt);
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
 };
 
 /**
@@ -39,7 +42,7 @@ export const checkAccountExists = async (email: string): Promise<boolean> => {
  * Creates a new user in the database with the given user data.
  * @param registrationDetails The user's first name, last name, email, and
  * password.
- * @returns The user ID of the new user from the database.
+ * @returns A user object with the given registration details.
  */
 export const createUser = async (
   registrationDetails: RegistrationDetails
@@ -55,9 +58,29 @@ export const createUser = async (
 };
 
 /**
+ * Gets a user from the database with the given email if a user with the given
+ * email exists in the database.
+ * @param email The email of the user trying to sign in.
+ * @returns A user object with the given email.
+ */
+export const getUserFromEmail = async (email: string): Promise<User> => {
+  const query: QueryConfig = {
+    text: "SELECT * FROM customer WHERE email = $1",
+    values: [email],
+  };
+  const queryResult = await pool.query(query);
+  if (queryResult.rowCount < 1) {
+    throw new StatusError(404, "User with email does not exist");
+  }
+  const newUser = getUserFromQueryResult(queryResult);
+  return newUser;
+};
+
+/**
  * Extracts the relevant user data from the given query result object.
  * @param queryResult The query result from the Postgres query.
  * @returns A user object.
+ * @throws Throws error if any part of the user cannot be extracted.
  */
 export const getUserFromQueryResult = (queryResult: QueryResult): User => {
   const queryResultRow = queryResult.rows[0];
@@ -67,7 +90,22 @@ export const getUserFromQueryResult = (queryResult: QueryResult): User => {
   const email = queryResultRow["email"];
   const password = queryResultRow["password"];
   if (!id || !firstName || !lastName || !email || !password) {
-    throw new Error("Could not create user properly");
+    throw new Error("Could not retrieve user from database");
   }
   return { id, firstName, lastName, email, password };
+};
+
+/**
+ * Checks if the hashed value of the given password matches the given hashed
+ * password.
+ * @param password The password being checked.
+ * @param hashedPassword The hashed password the user has.
+ * @returns `true` if the password is valid and `false` if the password is not
+ * valid.
+ */
+export const validatePassword = async (
+  password: string,
+  hashedPassword: string,
+): Promise<boolean> => {
+  return await bcrypt.compare(password, hashedPassword);
 };

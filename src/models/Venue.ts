@@ -2,7 +2,7 @@ export interface Venue {
   id: number;
   name: string;
   address: string;
-  postcode: number;
+  postcode: string;
   state: AustralianState;
   capacity: number;
   hourlyRate: number;

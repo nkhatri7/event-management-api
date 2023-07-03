@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { checkAccountExists, createUser, encryptPassword, getUserFromQueryResult } from "./auth";
+import { checkAccountExists, createUser, encryptPassword, getUserFromEmail, getUserFromQueryResult, validatePassword } from "./auth";
 import { getMockQueryResult } from "../mocks/database";
 import { User } from "../models/User";
 
@@ -65,6 +65,49 @@ describe("createUser", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...registrationData } = newUser;
     expect(await createUser(registrationData)).toEqual(newUser);
+  });
+});
+
+describe("getUserFromEmail", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should return a user object with the given email if an account with the email is found", async () => {
+    const userEmail = "userexists@example.com";
+    const mockQueryResult = getMockQueryResult(
+      1,
+      [
+        {
+          id: 1,
+          first_name: "some first name",
+          last_name: "some last name",
+          email: userEmail,
+          password: "hashedpassword",
+        },
+      ]
+    );
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+
+    const expectedResult: User = {
+      id: 1,
+      firstName: "some first name",
+      lastName: "some last name",
+      email: userEmail,
+      password: "hashedpassword",
+    };
+    expect(await getUserFromEmail(userEmail)).toEqual(expectedResult);
+  });
+
+  it("Should throw an error if a user with the given email doesn't exist", async () => {
+    const userEmail = "userdoesnotexist@example.com";
+    const mockQueryResult = getMockQueryResult(0);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(async () => await getUserFromEmail(userEmail))
+      .rejects
+      .toThrowError();
   });
 });
 
@@ -185,5 +228,20 @@ describe("encryptPassword", () => {
     const hashedPassword = await encryptPassword(userPassword);
     expect(hashedPassword).not.toBe(userPassword);
     expect(hashedPassword).not.toContain(userPassword);
+  });
+});
+
+describe("validatePassword", () => {
+  it("Should return true when the given password is the unhashed version of the hashed password", async () => {
+    const userPassword = "securepassword";
+    const hashedPassword = await encryptPassword(userPassword);
+    expect(await validatePassword(userPassword, hashedPassword)).toBe(true);
+  });
+
+  it("Should return false when the given password is not the unhashed version of the hashed password", async () => {
+    const givenPassword = "securepassword";
+    const actualPassword = "supersecurepassword";
+    const hashedPassword = await encryptPassword(actualPassword);
+    expect(await validatePassword(givenPassword, hashedPassword)).toBe(false);
   });
 });

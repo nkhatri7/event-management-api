@@ -1,5 +1,12 @@
 import { Pool } from "pg";
-import { checkAccountExists, createUser, encryptPassword, getUserFromEmail, getUserFromQueryResult, validatePassword } from "./auth";
+import {
+  checkAccountExists,
+  createUser,
+  encryptPassword,
+  getUserFromEmail,
+  getUserFromQueryResult,
+  validatePassword,
+} from "./auth";
 import { getMockQueryResult } from "../mocks/database";
 import { User } from "../models/User";
 

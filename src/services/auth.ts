@@ -49,8 +49,8 @@ export const createUser = async (
 ): Promise<User> => {
   const { firstName, lastName, email, password } = registrationDetails;
   const query: QueryConfig = {
-    text: "INSERT INTO customer(first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
-    values: [firstName, lastName, email, password],
+    text: "INSERT INTO customer(first_name, last_name, email, password, is_admin) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+    values: [firstName, lastName, email, password, false],
   };
   const queryResult = await pool.query(query);
   const newUser = getUserFromQueryResult(queryResult);
@@ -89,10 +89,11 @@ export const getUserFromQueryResult = (queryResult: QueryResult): User => {
   const lastName = queryResultRow["last_name"];
   const email = queryResultRow["email"];
   const password = queryResultRow["password"];
+  const isAdmin = queryResultRow["is_admin"] === "t" ? true : false;
   if (!id || !firstName || !lastName || !email || !password) {
     throw new Error("Could not retrieve user from database");
   }
-  return { id, firstName, lastName, email, password };
+  return { id, firstName, lastName, email, password, isAdmin };
 };
 
 /**

@@ -25,7 +25,8 @@ CREATE TABLE customer (
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
   email VARCHAR(80) NOT NULL,
-  password VARCHAR(255) NOT NULL
+  password VARCHAR(255) NOT NULL,
+  is_admin BOOLEAN NOT NULL,
 );
 
 # Create the venues table
@@ -46,7 +47,7 @@ CREATE TABLE event (
   start_time INT NOT NULL,
   end_time INT NOT NULL,
   guests INT NOT NULL,
-  is_cancelled INT NOT NULL
+  is_cancelled BOOLEAN NOT NULL
 );
 ```
 

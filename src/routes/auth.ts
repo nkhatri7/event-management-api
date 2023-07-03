@@ -1,7 +1,7 @@
-import express from "express";
+import { Router } from "express";
 import { handleLogin, handleRegistration } from "../controllers/auth";
 
-const router = express.Router();
+const router = Router();
 router.route("/register").post(handleRegistration);
 router.route("/login").post(handleLogin);
 

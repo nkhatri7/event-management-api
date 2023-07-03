@@ -37,11 +37,21 @@ describe("checkAccountExists", () => {
   });
 
   it("Should return true when a user with the email exists", async () => {
-    const mockQueryResult = getMockQueryResult([]);
+    const userEmail = "test@example.com";
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        first_name: "test first name",
+        last_name: "test last name",
+        email: userEmail,
+        password: "supersecurepassword",
+        is_admin: "f",
+      },
+    ]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
 
-    expect(await checkAccountExists("test@example.com")).toBe(true);
+    expect(await checkAccountExists(userEmail)).toBe(true);
   });
 });
 
@@ -54,6 +64,7 @@ describe("createUser", () => {
         last_name: "test last name",
         email: "test@example.com",
         password: "supersecurepassword",
+        is_admin: "f",
       },
     ]);
     const mockPool = new Pool();
@@ -65,6 +76,7 @@ describe("createUser", () => {
       lastName: "test last name",
       email: "test@example.com",
       password: "supersecurepassword",
+      isAdmin: false,
     };
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...registrationData } = newUser;
@@ -86,6 +98,7 @@ describe("getUserFromEmail", () => {
         last_name: "some last name",
         email: userEmail,
         password: "hashedpassword",
+        is_admin: "f",
       },
     ]);
     const mockPool = new Pool();
@@ -97,6 +110,7 @@ describe("getUserFromEmail", () => {
       lastName: "some last name",
       email: userEmail,
       password: "hashedpassword",
+      isAdmin: false,
     };
     expect(await getUserFromEmail(userEmail)).toEqual(expectedResult);
   });
@@ -125,6 +139,7 @@ describe("getUserFromQueryResult", () => {
         last_name: "test last name",
         email: "test@example.com",
         password: "supersecurepassword",
+        is_admin: "f",
       },
     ]);
     const expectedResult: User = {
@@ -133,6 +148,7 @@ describe("getUserFromQueryResult", () => {
       lastName: "test last name",
       email: "test@example.com",
       password: "supersecurepassword",
+      isAdmin: false,
     };
     expect(getUserFromQueryResult(mockQueryResult)).toEqual(expectedResult);
   });
@@ -144,6 +160,7 @@ describe("getUserFromQueryResult", () => {
         last_name: "test last name",
         email: "test@example.com",
         password: "supersecurepassword",
+        is_admin: "f",
       },
     ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
@@ -156,6 +173,7 @@ describe("getUserFromQueryResult", () => {
         last_name: "test last name",
         email: "test@example.com",
         password: "supersecurepassword",
+        is_admin: "f",
       },
     ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
@@ -168,6 +186,7 @@ describe("getUserFromQueryResult", () => {
         first_name: "test first name",
         email: "test@example.com",
         password: "supersecurepassword",
+        isAdmin: "f",
       },
     ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
@@ -180,6 +199,7 @@ describe("getUserFromQueryResult", () => {
         first_name: "test first name",
         last_name: "test last name",
         password: "supersecurepassword",
+        is_admin: "f",
       },
     ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
@@ -192,6 +212,7 @@ describe("getUserFromQueryResult", () => {
         first_name: "test first name",
         last_name: "test last name",
         email: "test@example.com",
+        is_admin: "f",
       },
     ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();

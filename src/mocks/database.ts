@@ -1,12 +1,9 @@
 import { QueryResult, QueryResultRow } from "pg";
 
-export const getMockQueryResult = (
-  rowCount: number,
-  rows?: QueryResultRow[]
-): QueryResult => {
+export const getMockQueryResult = (rows: QueryResultRow[]): QueryResult => {
   return {
-    rows: rows || [],
-    rowCount,
+    rows,
+    rowCount: rows.length,
     command: "",
     oid: 1,
     fields: [],

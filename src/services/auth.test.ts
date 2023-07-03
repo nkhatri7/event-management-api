@@ -29,7 +29,7 @@ describe("checkAccountExists", () => {
   });
 
   it("Should return false when a user with the email doesn't exist", async () => {
-    const mockQueryResult = getMockQueryResult(0);
+    const mockQueryResult = getMockQueryResult([]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
 
@@ -37,7 +37,7 @@ describe("checkAccountExists", () => {
   });
 
   it("Should return true when a user with the email exists", async () => {
-    const mockQueryResult = getMockQueryResult(1);
+    const mockQueryResult = getMockQueryResult([]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
 
@@ -47,18 +47,15 @@ describe("checkAccountExists", () => {
 
 describe("createUser", () => {
   it("Should return the given data with an ID", async () => {
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          id: 1,
-          first_name: "test first name",
-          last_name: "test last name",
-          email: "test@example.com",
-          password: "supersecurepassword",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        first_name: "test first name",
+        last_name: "test last name",
+        email: "test@example.com",
+        password: "supersecurepassword",
+      },
+    ]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
 
@@ -82,18 +79,15 @@ describe("getUserFromEmail", () => {
 
   it("Should return a user object with the given email if an account with the email is found", async () => {
     const userEmail = "userexists@example.com";
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          id: 1,
-          first_name: "some first name",
-          last_name: "some last name",
-          email: userEmail,
-          password: "hashedpassword",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        first_name: "some first name",
+        last_name: "some last name",
+        email: userEmail,
+        password: "hashedpassword",
+      },
+    ]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
 
@@ -109,7 +103,7 @@ describe("getUserFromEmail", () => {
 
   it("Should throw an error if a user with the given email doesn't exist", async () => {
     const userEmail = "userdoesnotexist@example.com";
-    const mockQueryResult = getMockQueryResult(0);
+    const mockQueryResult = getMockQueryResult([]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
     expect(async () => await getUserFromEmail(userEmail))
@@ -124,18 +118,15 @@ describe("getUserFromQueryResult", () => {
   });
 
   it("Should return an ID, first name, last name, email and password from the query result", () => {
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          id: 1,
-          first_name: "test first name",
-          last_name: "test last name",
-          email: "test@example.com",
-          password: "supersecurepassword",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        first_name: "test first name",
+        last_name: "test last name",
+        email: "test@example.com",
+        password: "supersecurepassword",
+      },
+    ]);
     const expectedResult: User = {
       id: 1,
       firstName: "test first name",
@@ -147,77 +138,62 @@ describe("getUserFromQueryResult", () => {
   });
 
   it("Should throw an error if the ID cannot be found", () => {
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          first_name: "test first name",
-          last_name: "test last name",
-          email: "test@example.com",
-          password: "supersecurepassword",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        first_name: "test first name",
+        last_name: "test last name",
+        email: "test@example.com",
+        password: "supersecurepassword",
+      },
+    ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
   });
 
   it("Should throw an error if the first name cannot be found", () => {
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          id: 1,
-          last_name: "test last name",
-          email: "test@example.com",
-          password: "supersecurepassword",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        last_name: "test last name",
+        email: "test@example.com",
+        password: "supersecurepassword",
+      },
+    ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
   });
 
   it("Should throw an error if the last name cannot be found", () => {
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          id: 1,
-          first_name: "test first name",
-          email: "test@example.com",
-          password: "supersecurepassword",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        first_name: "test first name",
+        email: "test@example.com",
+        password: "supersecurepassword",
+      },
+    ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
   });
 
   it("Should throw an error if the email cannot be found", () => {
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          id: 1,
-          first_name: "test first name",
-          last_name: "test last name",
-          password: "supersecurepassword",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        first_name: "test first name",
+        last_name: "test last name",
+        password: "supersecurepassword",
+      },
+    ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
   });
 
   it("Should throw an error if the password cannot be found", () => {
-    const mockQueryResult = getMockQueryResult(
-      1,
-      [
-        {
-          id: 1,
-          first_name: "test first name",
-          last_name: "test last name",
-          email: "test@example.com",
-        },
-      ]
-    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        first_name: "test first name",
+        last_name: "test last name",
+        email: "test@example.com",
+      },
+    ]);
     expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
   });
 });

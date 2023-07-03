@@ -32,8 +32,13 @@ CREATE TABLE customer (
 # Create the venues table
 CREATE TABLE venue (
   id BIGSERIAL NOT NULL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  postcode VARCHAR(4) NOT NULL,
+  state VARCHAR(3) NOT NULL,
   capacity INT NOT NULL,
-  hourly_rate DECIMAL NOT NULL
+  hourly_rate DECIMAL NOT NULL,
+  ADD CONSTRAINT check_state CHECK (state IN  ('NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT', 'ACT'))
 );
 
 # Create the events table

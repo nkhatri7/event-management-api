@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handleGetVenue, handleGetVenues, handleNewVenue } from "./venues";
+import { handleGetVenue, handleGetAllVenues, handleNewVenue } from "./venues";
 import * as venueService from "../services/venues";
 import * as authUtils from "../utils/auth";
 import { Venue } from "../models/Venue";
@@ -207,7 +207,7 @@ describe("handleNewVenue", () => {
   });
 });
 
-describe("handleGetVenues", () => {
+describe("handleGetAllVenues", () => {
   it("Should send a status code of 200 with an array of venues", async () => {
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
@@ -233,8 +233,8 @@ describe("handleGetVenues", () => {
         hourlyRate: 50,
       },
     ];
-    jest.spyOn(venueService, "getVenues").mockResolvedValue(venues);
-    await handleGetVenues({} as Request, mockResponse as Response);
+    jest.spyOn(venueService, "getAllVenues").mockResolvedValue(venues);
+    await handleGetAllVenues({} as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
     expect(mockResponse.json).toBeCalledWith(venues);
   });

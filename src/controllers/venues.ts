@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import {
   VenuePayload,
   createVenue,
+  getAllVenues,
   getVenue,
-  getVenues,
 } from "../services/venues";
 import { getUserFromId, isAuthorised } from "../utils/auth";
 import { StatusError } from "../utils/StatusError";
@@ -45,9 +45,9 @@ export const handleNewVenue = async (req: Request, res: Response) => {
   }
 };
 
-export const handleGetVenues = async (req: Request, res: Response) => {
+export const handleGetAllVenues = async (req: Request, res: Response) => {
   try {
-    const venues = await getVenues();
+    const venues = await getAllVenues();
     res.status(200).json(venues);
   } catch (err: any) {
     if (process.env.NODE_ENV !== "test") {

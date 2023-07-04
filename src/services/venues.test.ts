@@ -1,9 +1,9 @@
 import { Pool } from "pg";
 import {
   createVenue,
+  getAllVenues,
   getVenue,
   getVenueFromQueryResultRow,
-  getVenues,
 } from "./venues";
 import { getMockQueryResult } from "../mocks/database";
 import { Venue } from "../models/Venue";
@@ -61,7 +61,7 @@ describe("getVenues", () => {
     const mockQueryResult = getMockQueryResult([]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
-    expect(await getVenues()).toEqual([]);
+    expect(await getAllVenues()).toEqual([]);
   });
 
   it("Should return an array of one venue when there is one venue", async () => {
@@ -78,7 +78,7 @@ describe("getVenues", () => {
     ]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
-    expect(await getVenues()).toEqual([
+    expect(await getAllVenues()).toEqual([
       {
         id: 1,
         name: "Some venue name",
@@ -114,7 +114,7 @@ describe("getVenues", () => {
     ]);
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
-    expect(await getVenues()).toEqual([
+    expect(await getAllVenues()).toEqual([
       {
         id: 1,
         name: "Some venue name",

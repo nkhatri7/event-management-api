@@ -26,7 +26,7 @@ export const createVenue = async (
  * Gets all the venues in the database.
  * @returns An array of all the venues in the database.
  */
-export const getVenues = async (): Promise<Venue[]> => {
+export const getAllVenues = async (): Promise<Venue[]> => {
   const query: QueryConfig = {
     text: "SELECT * FROM venue",
   };

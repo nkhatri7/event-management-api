@@ -42,8 +42,10 @@ export const handleRegistration = async (req: Request, res: Response) => {
       token,
     });
   } catch (err: any) {
-    console.log(err);
-    res.status(err.status || 500).json(err.message || err);
+    if (process.env.NODE_ENV !== "test") {
+      console.log(err);
+    }
+    res.status(err.code || 500).json(err.message || err);
   }
 };
 
@@ -67,7 +69,9 @@ export const handleLogin = async (req: Request, res: Response) => {
       token,
     });
   } catch (err: any) {
-    console.log(err);
-    res.status(err.status || 500).json(err.message || err);
+    if (process.env.NODE_ENV !== "test") {
+      console.log(err);
+    }
+    res.status(err.code || 500).json(err.message || err);
   }
 };

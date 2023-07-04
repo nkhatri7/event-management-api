@@ -33,7 +33,9 @@ export const handleNewVenue = async (req: Request, res: Response) => {
     });
     res.status(201).json(newVenue);
   } catch (err: any) {
-    console.log(err);
-    res.status(err.status || 500).json(err.message || err);
+    if (process.env.NODE_ENV !== "test") {
+      console.log(err);
+    }
+    res.status(err.code || 500).json(err.message || err);
   }
 };

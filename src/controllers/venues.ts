@@ -7,11 +7,12 @@ import {
   getVenue,
   updateVenue,
 } from "../services/venues";
+import { safeHandler } from "../middleware/wrapper";
 import { getUserFromId, isAuthorised } from "../utils/auth";
 import { StatusError } from "../utils/StatusError";
 
-export const handleNewVenue = async (req: Request, res: Response) => {
-  try {
+export const handleNewVenue = safeHandler(
+  async (req: Request, res: Response) => {
     const {
       name,
       address,
@@ -39,44 +40,26 @@ export const handleNewVenue = async (req: Request, res: Response) => {
       hourlyRate,
     });
     res.status(201).json(newVenue);
-  } catch (err: any) {
-    if (process.env.NODE_ENV !== "test") {
-      console.log(err);
-    }
-    res.status(err.code || 500).json(err.message || err);
   }
-};
+);
 
-export const handleGetAllVenues = async (req: Request, res: Response) => {
-  try {
+export const handleGetAllVenues = safeHandler(
+  async (req: Request, res: Response) => {
     const venues = await getAllVenues();
     res.status(200).json(venues);
-  } catch (err: any) {
-    if (process.env.NODE_ENV !== "test") {
-      console.log(err);
-    }
-    res.status(err.code || 500).json(err.message || err);
   }
-};
+);
 
-export const handleGetVenue = async (req: Request, res: Response) => {
-  try {
+export const handleGetVenue = safeHandler(
+  async (req: Request, res: Response) => {
     const { id } = req.params;
-    if (!id) {
-      throw new StatusError(400, "Missing parameters");
-    }
     const venue = await getVenue(parseInt(id));
     res.status(200).json(venue);
-  } catch (err: any) {
-    if (process.env.NODE_ENV !== "test") {
-      console.log(err);
-    }
-    res.status(err.code || 500).json(err.message || err);
   }
-};
+);
 
-export const handleUpdateVenue = async (req: Request, res: Response) => {
-  try {
+export const handleUpdateVenue = safeHandler(
+  async (req: Request, res: Response) => {
     const { id } = req.params;
     const { capacity, hourlyRate }: UpdateVenuePayload = req.body;
     if (!id || !capacity || !hourlyRate) {
@@ -91,10 +74,5 @@ export const handleUpdateVenue = async (req: Request, res: Response) => {
     }
     const venue = await updateVenue(parseInt(id), { capacity, hourlyRate });
     res.status(200).json(venue);
-  } catch (err: any) {
-    if (process.env.NODE_ENV !== "test") {
-      console.log(err);
-    }
-    res.status(err.code || 500).json(err.message || err);
   }
-};
+);

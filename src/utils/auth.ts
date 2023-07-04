@@ -2,7 +2,7 @@ import { Request } from "express";
 import { QueryConfig, QueryResult } from "pg";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User";
-import { pool } from "../config/database";
+import { pool } from "../database";
 
 interface TokenPayload {
   id: number;

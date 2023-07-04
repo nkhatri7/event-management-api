@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { QueryConfig } from "pg";
-import { pool } from "../config/database";
+import { pool } from "../database";
 import { User } from "../models/User";
 import { StatusError } from "../utils/StatusError";
 import { getUserFromQueryResult } from "../utils/auth";

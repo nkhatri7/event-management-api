@@ -1,6 +1,6 @@
 import { QueryConfig, QueryResultRow } from "pg";
 import { Venue } from "../models/Venue";
-import { pool } from "../config/database";
+import { pool } from "../database";
 import { StatusError } from "../utils/StatusError";
 
 export type VenuePayload = Omit<Venue, "id">;

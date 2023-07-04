@@ -23,6 +23,18 @@ export const createVenue = async (
 };
 
 /**
+ * Gets all the venues in the database.
+ * @returns An array of all the venues in the database.
+ */
+export const getVenues = async (): Promise<Venue[]> => {
+  const query: QueryConfig = {
+    text: "SELECT * FROM venue",
+  };
+  const queryResult = await pool.query(query);
+  return queryResult.rows.map((row) => getVenueFromQueryResultRow(row));
+};
+
+/**
  * Extracts the relevant venue data from the given query result row.
  * @param queryResultRow A row from the query result.
  * @returns A venue object with the data from the query result row.

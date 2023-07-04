@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { VenuePayload, createVenue } from "../services/venues";
+import { VenuePayload, createVenue, getVenues } from "../services/venues";
 import { getUserFromId, isAuthorised } from "../utils/auth";
 import { StatusError } from "../utils/StatusError";
 
@@ -32,6 +32,18 @@ export const handleNewVenue = async (req: Request, res: Response) => {
       hourlyRate,
     });
     res.status(201).json(newVenue);
+  } catch (err: any) {
+    if (process.env.NODE_ENV !== "test") {
+      console.log(err);
+    }
+    res.status(err.code || 500).json(err.message || err);
+  }
+};
+
+export const handleGetVenues = async (req: Request, res: Response) => {
+  try {
+    const venues = await getVenues();
+    res.status(200).json(venues);
   } catch (err: any) {
     if (process.env.NODE_ENV !== "test") {
       console.log(err);

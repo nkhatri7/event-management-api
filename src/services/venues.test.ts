@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { createVenue, getVenueFromQueryResultRow } from "./venues";
+import { createVenue, getVenueFromQueryResultRow, getVenues } from "./venues";
 import { getMockQueryResult } from "../mocks/database";
 import { Venue } from "../models/Venue";
 
@@ -48,6 +48,87 @@ describe("createVenue", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...venuePayload } = newVenue;
     expect(await createVenue(venuePayload)).toEqual(newVenue);
+  });
+});
+
+describe("getVenues", () => {
+  it("Should return an empty array when no venues exist", async () => {
+    const mockQueryResult = getMockQueryResult([]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getVenues()).toEqual([]);
+  });
+
+  it("Should return an array of one venue when there is one venue", async () => {
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        name: "Some venue name",
+        address: "10 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourly_rate: 50,
+      },
+    ]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getVenues()).toEqual([
+      {
+        id: 1,
+        name: "Some venue name",
+        address: "10 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourlyRate: 50,
+      },
+    ]);
+  });
+
+  it("Should return an array of two venues when there are two venues", async () => {
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        name: "Some venue name",
+        address: "10 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourly_rate: 50,
+      },
+      {
+        id: 2,
+        name: "Another venue name",
+        address: "40 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourly_rate: 50,
+      },
+    ]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getVenues()).toEqual([
+      {
+        id: 1,
+        name: "Some venue name",
+        address: "10 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourlyRate: 50,
+      },
+      {
+        id: 2,
+        name: "Another venue name",
+        address: "40 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourlyRate: 50,
+      },
+    ]);
   });
 });
 

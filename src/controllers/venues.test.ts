@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { handleNewVenue } from "./venues";
+import { handleGetVenues, handleNewVenue } from "./venues";
 import * as venueService from "../services/venues";
 import * as authUtils from "../utils/auth";
+import { Venue } from "../models/Venue";
 
 jest.mock("../services/venues");
 jest.mock("../utils/auth");
@@ -202,5 +203,38 @@ describe("handleNewVenue", () => {
     });
     await handleNewVenue(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(201);
+  });
+});
+
+describe("handleGetVenues", () => {
+  it("Should send a status code of 200 with an array of venues", async () => {
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const venues: Venue[] = [
+      {
+        id: 1,
+        name: "Some venue name",
+        address: "10 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourlyRate: 50,
+      },
+      {
+        id: 2,
+        name: "Another venue name",
+        address: "40 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 100,
+        hourlyRate: 50,
+      },
+    ];
+    jest.spyOn(venueService, "getVenues").mockResolvedValue(venues);
+    await handleGetVenues({} as Request, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(200);
+    expect(mockResponse.json).toBeCalledWith(venues);
   });
 });

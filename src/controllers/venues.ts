@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { VenuePayload, createVenue, getVenues } from "../services/venues";
+import {
+  VenuePayload,
+  createVenue,
+  getVenue,
+  getVenues,
+} from "../services/venues";
 import { getUserFromId, isAuthorised } from "../utils/auth";
 import { StatusError } from "../utils/StatusError";
 
@@ -44,6 +49,22 @@ export const handleGetVenues = async (req: Request, res: Response) => {
   try {
     const venues = await getVenues();
     res.status(200).json(venues);
+  } catch (err: any) {
+    if (process.env.NODE_ENV !== "test") {
+      console.log(err);
+    }
+    res.status(err.code || 500).json(err.message || err);
+  }
+};
+
+export const handleGetVenue = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      throw new StatusError(400, "Missing parameters");
+    }
+    const venue = await getVenue(parseInt(id));
+    res.status(200).json(venue);
   } catch (err: any) {
     if (process.env.NODE_ENV !== "test") {
       console.log(err);

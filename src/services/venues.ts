@@ -1,6 +1,7 @@
 import { QueryConfig, QueryResultRow } from "pg";
 import { Venue } from "../models/Venue";
 import { pool } from "../config/database";
+import { StatusError } from "../utils/StatusError";
 
 export type VenuePayload = Omit<Venue, "id">;
 
@@ -18,8 +19,7 @@ export const createVenue = async (
     values: [name, address, postcode, state, capacity, hourlyRate],
   };
   const queryResult = await pool.query(query);
-  const newVenue = getVenueFromQueryResultRow(queryResult.rows[0]);
-  return newVenue;
+  return getVenueFromQueryResultRow(queryResult.rows[0]);
 };
 
 /**
@@ -32,6 +32,23 @@ export const getVenues = async (): Promise<Venue[]> => {
   };
   const queryResult = await pool.query(query);
   return queryResult.rows.map((row) => getVenueFromQueryResultRow(row));
+};
+
+/**
+ * Gets the venue with the given ID.
+ * @param id The ID of the venue.
+ * @returns The venue with the given ID.
+ */
+export const getVenue = async (id: number): Promise<Venue> => {
+  const query: QueryConfig = {
+    text: "SELECT * FROM venue WHERE id = $1",
+    values: [id],
+  };
+  const queryResult = await pool.query(query);
+  if (queryResult.rowCount === 0) {
+    throw new StatusError(404, `Venue with ID ${id} doesn't exist`);
+  }
+  return getVenueFromQueryResultRow(queryResult.rows[0]);
 };
 
 /**

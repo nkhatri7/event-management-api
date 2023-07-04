@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { handleGetVenues, handleNewVenue } from "./venues";
+import { handleGetVenue, handleGetVenues, handleNewVenue } from "./venues";
 import * as venueService from "../services/venues";
 import * as authUtils from "../utils/auth";
 import { Venue } from "../models/Venue";
+import { StatusError } from "../utils/StatusError";
 
 jest.mock("../services/venues");
 jest.mock("../utils/auth");
@@ -236,5 +237,43 @@ describe("handleGetVenues", () => {
     await handleGetVenues({} as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
     expect(mockResponse.json).toBeCalledWith(venues);
+  });
+});
+
+describe("handleGetVenue", () => {
+  it("Should send a status code of 404 if a venue with the given ID doesn't exist", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(venueService, "getVenue").mockImplementationOnce(() => {
+      throw new StatusError(404, "Venue doesn't exist");
+    });
+    await handleGetVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(404);
+  });
+
+  it("Should send a status code of 200 if the venue with the given ID exists", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(venueService, "getVenue").mockResolvedValue({
+      id: 1,
+      name: "Some venue name",
+      address: "10 Test St",
+      postcode: "2000",
+      state: "NSW",
+      capacity: 100,
+      hourlyRate: 50,
+    });
+    await handleGetVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(200);
   });
 });

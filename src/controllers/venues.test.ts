@@ -374,6 +374,35 @@ describe("handleUpdateVenue", () => {
     expect(mockResponse.status).toBeCalledWith(403);
   });
 
+  it("Should send a status code of 404 if a venue with the given ID doesn't exist", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+      body: {
+        userId: 1,
+        capacity: 120,
+        hourlyRate: 60,
+      },
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
+      id: 1,
+      firstName: "some first name",
+      lastName: "some last name",
+      email: "test@example.com",
+      password: "hashedpassword",
+      isAdmin: true,
+    });
+    jest.spyOn(venueService, "updateVenue").mockImplementationOnce(() => {
+      throw new StatusError(404, "Venue doesn't exist");
+    });
+    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(404);
+  });
+
   it("Should send a status code of 200 if the user making the request is an admin", async () => {
     const mockRequest = {
       params: { id: "1" } as unknown,

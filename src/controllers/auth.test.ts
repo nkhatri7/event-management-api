@@ -127,7 +127,7 @@ describe("handleLogin", () => {
     jest.clearAllMocks();
   });
 
-  it("Should return a status code of 400 when the email is not in the request body", async () => {
+  it("Should send a status code of 400 when the email is not in the request body", async () => {
     const mockRequest = {
       body: {
         password: "securepassword",
@@ -141,7 +141,7 @@ describe("handleLogin", () => {
     expect(mockResponse.status).toBeCalledWith(400);
   });
 
-  it("Should return a status code of 400 when the password is not in the request body", async () => {
+  it("Should send a status code of 400 when the password is not in the request body", async () => {
     const mockRequest = {
       body: {
         email: "test@example.com",
@@ -155,7 +155,7 @@ describe("handleLogin", () => {
     expect(mockResponse.status).toBeCalledWith(400);
   });
 
-  it("Should return a status code of 401 when the password is incorrect", async () => {
+  it("Should send a status code of 401 when the password is incorrect", async () => {
     const mockRequest = {
       body: {
         email: "test@example.com",
@@ -178,7 +178,7 @@ describe("handleLogin", () => {
     expect(mockResponse.status).toBeCalledWith(401);
   });
 
-  it("Should return a status code of 200 when the email and password is correct", async () => {
+  it("Should send a status code of 200 when the email and password is correct", async () => {
     const mockRequest = {
       body: {
         email: "test@example.com",

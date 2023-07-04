@@ -4,10 +4,10 @@
   "description": "An API that handles event management",
   "main": "src/app.ts",
   "scripts": {
-    "dev": "NODE_OPTIONS='--experimental-specifier-resolution=node --trace-warnings' nodemon src/app.ts",
+    "dev": "NODE_OPTIONS='--experimental-specifier-resolution=node' nodemon src/app.ts",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --collect-coverage"
+    "test:watch": "jest --watchAll",
+    "test:coverage": "jest --collect-coverage --verbose"
   },
   "repository": {
     "type": "git",

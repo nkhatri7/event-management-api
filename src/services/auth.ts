@@ -1,17 +1,13 @@
 import bcrypt from "bcrypt";
-import { QueryConfig, QueryResult } from "pg";
+import { QueryConfig } from "pg";
 import { pool } from "../config/database";
 import { User } from "../models/User";
 import { StatusError } from "../utils/StatusError";
+import { getUserFromQueryResult } from "../utils/auth";
 
-export interface RegistrationDetails {
-  firstName: string | undefined;
-  lastName: string | undefined;
-  email: string | undefined;
-  password: string | undefined;
-}
+export type RegistrationPayload = Omit<User, "id" | "isAdmin">;
 
-export type LoginDetails = Pick<RegistrationDetails, "email" | "password">;
+export type LoginPayload = Pick<RegistrationPayload, "email" | "password">;
 
 /**
  * Encrypts the given password.
@@ -40,14 +36,14 @@ export const checkAccountExists = async (email: string): Promise<boolean> => {
 
 /**
  * Creates a new user in the database with the given user data.
- * @param registrationDetails The user's first name, last name, email, and
+ * @param registrationPayload The user's first name, last name, email, and
  * password.
  * @returns A user object with the given registration details.
  */
 export const createUser = async (
-  registrationDetails: RegistrationDetails
+  registrationPayload: RegistrationPayload
 ): Promise<User> => {
-  const { firstName, lastName, email, password } = registrationDetails;
+  const { firstName, lastName, email, password } = registrationPayload;
   const query: QueryConfig = {
     text: "INSERT INTO customer(first_name, last_name, email, password, is_admin) VALUES ($1, $2, $3, $4, $5) RETURNING *",
     values: [firstName, lastName, email, password, false],
@@ -74,26 +70,6 @@ export const getUserFromEmail = async (email: string): Promise<User> => {
   }
   const newUser = getUserFromQueryResult(queryResult);
   return newUser;
-};
-
-/**
- * Extracts the relevant user data from the given query result object.
- * @param queryResult The query result from the Postgres query.
- * @returns A user object.
- * @throws Throws error if any part of the user cannot be extracted.
- */
-export const getUserFromQueryResult = (queryResult: QueryResult): User => {
-  const queryResultRow = queryResult.rows[0];
-  const id = queryResultRow["id"];
-  const firstName = queryResultRow["first_name"];
-  const lastName = queryResultRow["last_name"];
-  const email = queryResultRow["email"];
-  const password = queryResultRow["password"];
-  const isAdmin = queryResultRow["is_admin"] === "t" ? true : false;
-  if (!id || !firstName || !lastName || !email || !password) {
-    throw new Error("Could not retrieve user from database");
-  }
-  return { id, firstName, lastName, email, password, isAdmin };
 };
 
 /**

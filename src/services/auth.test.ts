@@ -4,7 +4,6 @@ import {
   createUser,
   encryptPassword,
   getUserFromEmail,
-  getUserFromQueryResult,
   validatePassword,
 } from "./auth";
 import { getMockQueryResult } from "../mocks/database";
@@ -45,7 +44,7 @@ describe("checkAccountExists", () => {
         last_name: "test last name",
         email: userEmail,
         password: "supersecurepassword",
-        is_admin: "f",
+        is_admin: false,
       },
     ]);
     const mockPool = new Pool();
@@ -64,7 +63,7 @@ describe("createUser", () => {
         last_name: "test last name",
         email: "test@example.com",
         password: "supersecurepassword",
-        is_admin: "f",
+        is_admin: false,
       },
     ]);
     const mockPool = new Pool();
@@ -79,7 +78,7 @@ describe("createUser", () => {
       isAdmin: false,
     };
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...registrationData } = newUser;
+    const { id, isAdmin, ...registrationData } = newUser;
     expect(await createUser(registrationData)).toEqual(newUser);
   });
 });
@@ -98,7 +97,7 @@ describe("getUserFromEmail", () => {
         last_name: "some last name",
         email: userEmail,
         password: "hashedpassword",
-        is_admin: "f",
+        is_admin: false,
       },
     ]);
     const mockPool = new Pool();
@@ -123,99 +122,6 @@ describe("getUserFromEmail", () => {
     expect(async () => await getUserFromEmail(userEmail))
       .rejects
       .toThrowError();
-  });
-});
-
-describe("getUserFromQueryResult", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("Should return an ID, first name, last name, email and password from the query result", () => {
-    const mockQueryResult = getMockQueryResult([
-      {
-        id: 1,
-        first_name: "test first name",
-        last_name: "test last name",
-        email: "test@example.com",
-        password: "supersecurepassword",
-        is_admin: "f",
-      },
-    ]);
-    const expectedResult: User = {
-      id: 1,
-      firstName: "test first name",
-      lastName: "test last name",
-      email: "test@example.com",
-      password: "supersecurepassword",
-      isAdmin: false,
-    };
-    expect(getUserFromQueryResult(mockQueryResult)).toEqual(expectedResult);
-  });
-
-  it("Should throw an error if the ID cannot be found", () => {
-    const mockQueryResult = getMockQueryResult([
-      {
-        first_name: "test first name",
-        last_name: "test last name",
-        email: "test@example.com",
-        password: "supersecurepassword",
-        is_admin: "f",
-      },
-    ]);
-    expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
-  });
-
-  it("Should throw an error if the first name cannot be found", () => {
-    const mockQueryResult = getMockQueryResult([
-      {
-        id: 1,
-        last_name: "test last name",
-        email: "test@example.com",
-        password: "supersecurepassword",
-        is_admin: "f",
-      },
-    ]);
-    expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
-  });
-
-  it("Should throw an error if the last name cannot be found", () => {
-    const mockQueryResult = getMockQueryResult([
-      {
-        id: 1,
-        first_name: "test first name",
-        email: "test@example.com",
-        password: "supersecurepassword",
-        isAdmin: "f",
-      },
-    ]);
-    expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
-  });
-
-  it("Should throw an error if the email cannot be found", () => {
-    const mockQueryResult = getMockQueryResult([
-      {
-        id: 1,
-        first_name: "test first name",
-        last_name: "test last name",
-        password: "supersecurepassword",
-        is_admin: "f",
-      },
-    ]);
-    expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
-  });
-
-  it("Should throw an error if the password cannot be found", () => {
-    const mockQueryResult = getMockQueryResult([
-      {
-        id: 1,
-        first_name: "test first name",
-        last_name: "test last name",
-        email: "test@example.com",
-        is_admin: "f",
-      },
-    ]);
-    expect(() => getUserFromQueryResult(mockQueryResult)).toThrowError();
   });
 });
 

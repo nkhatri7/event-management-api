@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {
-  LoginDetails,
-  RegistrationDetails,
+  LoginPayload,
+  RegistrationPayload,
   checkAccountExists,
   createUser,
   encryptPassword,
@@ -18,7 +18,7 @@ export const handleRegistration = async (req: Request, res: Response) => {
       lastName,
       email,
       password,
-    }: RegistrationDetails = req.body;
+    }: RegistrationPayload = req.body;
     if (!firstName || !lastName || !email || !password) {
       throw new StatusError(400, "Missing registration details");
     }
@@ -49,7 +49,7 @@ export const handleRegistration = async (req: Request, res: Response) => {
 
 export const handleLogin = async (req: Request, res: Response) => {
   try {
-    const { email, password }: LoginDetails = req.body;
+    const { email, password }: LoginPayload = req.body;
     if (!email || !password) {
       throw new StatusError(400, "Missing email or password");
     }

@@ -4,6 +4,7 @@ import {
   getAllVenues,
   getVenue,
   getVenueFromQueryResultRow,
+  updateVenue,
 } from "./venues";
 import { getMockQueryResult } from "../mocks/database";
 import { Venue } from "../models/Venue";
@@ -56,7 +57,7 @@ describe("createVenue", () => {
   });
 });
 
-describe("getVenues", () => {
+describe("getAllVenues", () => {
   it("Should return an empty array when no venues exist", async () => {
     const mockQueryResult = getMockQueryResult([]);
     const mockPool = new Pool();
@@ -170,6 +171,45 @@ describe("getVenue", () => {
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
     expect(async () => await getVenue(venueId)).rejects.toThrowError();
+  });
+});
+
+describe("updateVenue", () => {
+  it("Should return the venue object with the updated values", async () => {
+    const venueId = 1;
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: venueId,
+        name: "Some venue name",
+        address: "10 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 120,
+        hourly_rate: 60,
+      },
+    ]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await updateVenue(venueId, { capacity: 120, hourlyRate: 60 }))
+      .toEqual({
+        id: venueId,
+        name: "Some venue name",
+        address: "10 Test St",
+        postcode: "2000",
+        state: "NSW",
+        capacity: 120,
+        hourlyRate: 60,
+      });
+  });
+
+  it("Should throw an error if a venue with the given ID doesn't exist", async () => {
+    const venueId = 2;
+    const mockQueryResult = getMockQueryResult([]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(async () => {
+      await updateVenue(venueId, { capacity: 120, hourlyRate: 60 });
+    }).rejects.toThrowError();
   });
 });
 

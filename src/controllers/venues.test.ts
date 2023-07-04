@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handleGetVenue, handleGetAllVenues, handleNewVenue } from "./venues";
+import { handleGetVenue, handleGetAllVenues, handleNewVenue, handleUpdateVenue } from "./venues";
 import * as venueService from "../services/venues";
 import * as authUtils from "../utils/auth";
 import { Venue } from "../models/Venue";
@@ -208,6 +208,10 @@ describe("handleNewVenue", () => {
 });
 
 describe("handleGetAllVenues", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("Should send a status code of 200 with an array of venues", async () => {
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
@@ -241,6 +245,10 @@ describe("handleGetAllVenues", () => {
 });
 
 describe("handleGetVenue", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("Should send a status code of 404 if a venue with the given ID doesn't exist", async () => {
     const mockRequest = {
       params: { id: "1" } as unknown,
@@ -274,6 +282,130 @@ describe("handleGetVenue", () => {
       hourlyRate: 50,
     });
     await handleGetVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(200);
+  });
+});
+
+describe("handleUpdateVenue", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should send a status code of 400 if the capacity is not in the request body", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+      body: { hourlyRate: 60 },
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(400);
+  });
+
+  it("Should send a status code of 400 if the hourly rate is not in the request body", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+      body: { capacity: 120 },
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(400);
+  });
+
+  it("Should send a status code of 400 if the hourly rate is not in the request body", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+      body: { capacity: 120 },
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(400);
+  });
+
+  it("Should send a status code of 401 if the request is unauthenticated", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+      body: {
+        userId: 1,
+        capacity: 120,
+        hourlyRate: 60,
+      },
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(401);
+  });
+
+  it("Should send a status code of 403 if the user making the request is not an admin", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+      body: {
+        userId: 1,
+        capacity: 120,
+        hourlyRate: 60,
+      },
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
+      id: 1,
+      firstName: "some first name",
+      lastName: "some last name",
+      email: "test@example.com",
+      password: "hashedpassword",
+      isAdmin: false,
+    });
+    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(403);
+  });
+
+  it("Should send a status code of 200 if the user making the request is an admin", async () => {
+    const mockRequest = {
+      params: { id: "1" } as unknown,
+      body: {
+        userId: 1,
+        capacity: 120,
+        hourlyRate: 60,
+      },
+    } as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
+      id: 1,
+      firstName: "some first name",
+      lastName: "some last name",
+      email: "test@example.com",
+      password: "hashedpassword",
+      isAdmin: true,
+    });
+    jest.spyOn(venueService, "updateVenue").mockResolvedValue({
+      id: 1,
+      name: "Some venue name",
+      address: "10 Test St",
+      postcode: "2000",
+      state: "NSW",
+      capacity: 120,
+      hourlyRate: 60,
+    });
+    await handleUpdateVenue(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
   });
 });

@@ -4,6 +4,7 @@ import { pool } from "../database";
 import { StatusError } from "../utils/StatusError";
 
 export type VenuePayload = Omit<Venue, "id">;
+export type UpdateVenuePayload = Pick<Venue, "capacity" | "hourlyRate">;
 
 /**
  * Creates a venue in the database with the given venue data.
@@ -52,6 +53,28 @@ export const getVenue = async (id: number): Promise<Venue> => {
 };
 
 /**
+ * Updates the capacity and hourly rate of the venue with the given ID.
+ * @param id The ID of the venue.
+ * @param payload The new capacity and hourly rate.
+ * @returns An updated venue object.
+ */
+export const updateVenue = async (
+  id: number,
+  payload: UpdateVenuePayload
+): Promise<Venue> => {
+  const { capacity, hourlyRate } = payload;
+  const query: QueryConfig = {
+    text: "UPDATE venue SET capacity = $1, hourly_rate = $2 WHERE id = $3 RETURNING *",
+    values: [capacity, hourlyRate, id],
+  };
+  const queryResult = await pool.query(query);
+  if (queryResult.rowCount === 0) {
+    throw new StatusError(404, `Venue with ID ${id} doesn't exist`);
+  }
+  return getVenueFromQueryResultRow(queryResult.rows[0]);
+};
+
+/**
  * Extracts the relevant venue data from the given query result row.
  * @param queryResultRow A row from the query result.
  * @returns A venue object with the data from the query result row.
@@ -65,7 +88,7 @@ export const getVenueFromQueryResultRow = (
   const postcode = queryResultRow["postcode"];
   const state = queryResultRow["state"];
   const capacity = queryResultRow["capacity"];
-  const hourlyRate = queryResultRow["hourly_rate"];
+  const hourlyRate = Number(queryResultRow["hourly_rate"]);
   if (!id || !name || !address || !postcode || !state || !capacity
       || !hourlyRate) {
     throw new Error("Could not receive venue from database");

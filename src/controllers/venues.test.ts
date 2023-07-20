@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { handleGetVenue, handleGetAllVenues, handleNewVenue, handleUpdateVenue } from "./venues";
+import {
+  handleGetVenue,
+  handleGetAllVenues,
+  handleNewVenue,
+  handleUpdateVenue,
+} from "./venues";
 import * as venueService from "../services/venues";
 import * as authUtils from "../utils/auth";
 import { Venue } from "../models/Venue";

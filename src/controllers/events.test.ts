@@ -306,11 +306,7 @@ describe("handleGetAllEvents", () => {
   });
 
   it("Should send a status code of 200 if the request is authenticated", async () => {
-    const mockRequest = {
-      body: {
-        userId: 1,
-      },
-    } as Request;
+    const mockRequest = {} as Request;
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),

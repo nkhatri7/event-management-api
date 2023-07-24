@@ -81,7 +81,7 @@ describe("isAuthorised", () => {
     expect(isAuthorised(mockRequest)).toBe(false);
   });
 
-  it("Should return true if the token isn't expired and the given user ID matches the ID in the jwt payload", () => {
+  it("Should return true if the token isn't expired and the given user ID from the request body matches the ID in the jwt payload", () => {
     const mockToken = "somejwttoken";
     const userId = 1;
     const mockRequest = {
@@ -99,6 +99,26 @@ describe("isAuthorised", () => {
     };
     (jwt.decode as jest.Mock).mockReturnValue(mockJwtObject);
     expect(isAuthorised(mockRequest)).toBe(true);
+  });
+
+  it("Should return true if the token isn't expired and the given user ID from the request query params matches the ID in the jwt payload", () => {
+    const mockToken = "somejwttoken";
+    const userId = 1;
+    const mockRequest: Partial<Request> = {
+      headers: {
+        authorization: `Bearer ${mockToken}`,
+      },
+      query: {
+        uid: "1",
+      },
+    };
+    const mockJwtObject: jwt.Jwt = {
+      header: { alg: "" },
+      payload: { exp: (new Date().getTime() / 1000) + ONE_WEEK, id: userId },
+      signature: "",
+    };
+    (jwt.decode as jest.Mock).mockReturnValue(mockJwtObject);
+    expect(isAuthorised(mockRequest as Request)).toBe(true);
   });
 });
 

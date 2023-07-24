@@ -61,7 +61,9 @@ export const isAuthorised = (req: Request): boolean => {
   if (payload.exp && isTokenExpired(payload.exp)) {
     return false;
   }
-  const userId = req.body.userId;
+  const userId = req.query && req.query.uid
+    ? parseInt(req.query.uid as string)
+    : req.body.userId;
   return userId === parseInt(payload.id);
 };
 

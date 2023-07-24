@@ -123,6 +123,20 @@ export const getVenueEvents = async (id: number): Promise<Event[]> => {
 };
 
 /**
+ * Gets all the events for a user with the given ID.
+ * @param id The ID of a user.
+ * @returns An array of all the events for a user.
+ */
+export const getUserEvents = async (id: number): Promise<Event[]> => {
+  const query: QueryConfig = {
+    text: "SELECT * FROM event WHERE user_id = $1",
+    values: [id],
+  };
+  const queryResult = await pool.query(query);
+  return queryResult.rows.map((row) => getEventFromQueryResultRow(row));
+};
+
+/**
  * Extracts the relevant event data from the given query result row.
  * @param queryResultRow A row from the query result.
  * @returns An event object with the data from the query result row.

@@ -6,6 +6,7 @@ import {
   createEvent,
   getAllEvents,
   getEvent,
+  getUserEvents,
   getVenueEvents,
   isTimeSlotAvailable,
 } from "../services/events";
@@ -70,6 +71,17 @@ export const handleGetVenueEvents = safeHandler(
     }
     const { id } = req.params;
     const events = await getVenueEvents(parseInt(id));
+    res.status(200).json(events);
+  }
+);
+
+export const handleGetUserEvents = safeHandler(
+  async (req: Request, res: Response) => {
+    if(!isAuthorised(req)) {
+      throw new StatusError(401, "Unauthorised");
+    }
+    const { id } = req.params;
+    const events = await getUserEvents(parseInt(id));
     res.status(200).json(events);
   }
 );

@@ -4,6 +4,7 @@ import {
   EventPayload,
   canFitGuests,
   createEvent,
+  getActiveEvents,
   getAllEvents,
   getEvent,
   getUserEvents,
@@ -82,6 +83,16 @@ export const handleGetUserEvents = safeHandler(
     }
     const { id } = req.params;
     const events = await getUserEvents(parseInt(id));
+    res.status(200).json(events);
+  }
+);
+
+export const handleGetActiveEvents = safeHandler(
+  async (req: Request, res: Response) => {
+    if(!isAuthorised(req)) {
+      throw new StatusError(401, "Unauthorised");
+    }
+    const events = await getActiveEvents();
     res.status(200).json(events);
   }
 );

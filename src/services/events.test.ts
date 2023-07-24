@@ -5,6 +5,7 @@ import {
   createEvent,
   formatDate,
   formatNumber,
+  getActiveEvents,
   getAllEvents,
   getDateIntervals,
   getEvent,
@@ -485,6 +486,99 @@ describe("getUserEvents", () => {
     const mockPool = new Pool();
     (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
     expect(await getUserEvents(1)).toEqual([
+      {
+        id: 1,
+        userId: 1,
+        venueId: 1,
+        day: 1,
+        month: 1,
+        year: 2023,
+        startTime: 7,
+        endTime: 11,
+        guests: 100,
+        isCancelled: false,
+      },
+      {
+        id: 2,
+        userId: 1,
+        venueId: 1,
+        day: 2,
+        month: 1,
+        year: 2023,
+        startTime: 7,
+        endTime: 11,
+        guests: 100,
+        isCancelled: false,
+      },
+    ]);
+  });
+});
+
+describe("getAllEvents", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should return an empty array when no active events are in the database", async () => {
+    const mockQueryResult = getMockQueryResult([]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getActiveEvents()).toEqual([]);
+  });
+
+  it("Should return an array of one event when there is one active event", async () => {
+    const mockQueryResult = getMockQueryResult([{
+      id: 1,
+      user_id: 1,
+      venue_id: 1,
+      date: "2023-01-01",
+      start_time: 7,
+      end_time: 11,
+      guests: 100,
+      is_cancelled: false,
+    }]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getActiveEvents()).toEqual([{
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: 1,
+      month: 1,
+      year: 2023,
+      startTime: 7,
+      endTime: 11,
+      guests: 100,
+      isCancelled: false,
+    }]);
+  });
+
+  it("Should return an array of two events when there are two active events", async () => {
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        user_id: 1,
+        venue_id: 1,
+        date: "2023-01-01",
+        start_time: 7,
+        end_time: 11,
+        guests: 100,
+        is_cancelled: false,
+      },
+      {
+        id: 2,
+        user_id: 1,
+        venue_id: 1,
+        date: "2023-01-02",
+        start_time: 7,
+        end_time: 11,
+        guests: 100,
+        is_cancelled: false,
+      },
+    ]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getActiveEvents()).toEqual([
       {
         id: 1,
         userId: 1,

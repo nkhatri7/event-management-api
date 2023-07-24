@@ -137,6 +137,19 @@ export const getUserEvents = async (id: number): Promise<Event[]> => {
 };
 
 /**
+ * Gets all the events from the database that are not cancelled.
+ * @returns An array of the active events.
+ */
+export const getActiveEvents = async (): Promise<Event[]> => {
+  const query: QueryConfig = {
+    text: "SELECT * FROM event WHERE is_cancelled = $1",
+    values: [false],
+  };
+  const queryResult = await pool.query(query);
+  return queryResult.rows.map((row) => getEventFromQueryResultRow(row));
+};
+
+/**
  * Extracts the relevant event data from the given query result row.
  * @param queryResultRow A row from the query result.
  * @returns An event object with the data from the query result row.

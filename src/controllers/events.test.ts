@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as eventService from "../services/events";
 import * as authUtils from "../utils/auth";
 import {
+  handleGetActiveEvents,
   handleGetAllEvents,
   handleGetEvent,
   handleGetUserEvents,
@@ -459,6 +460,35 @@ describe("handleGetUserEvents", () => {
       mockRequest as Request,
       mockResponse as Response
     );
+    expect(mockResponse.status).toBeCalledWith(200);
+  });
+});
+
+describe("handleGetActiveEvents", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should send a status code of 401 if the request is unauthenticated", async () => {
+    const mockRequest: Partial<Request> = {};
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    await handleGetActiveEvents(mockRequest as Request, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(401);
+  });
+
+  it("Should send a status code of 200 if the request is authenticated", async () => {
+    const mockRequest = {} as Request;
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(eventService, "getActiveEvents").mockResolvedValue([]);
+    await handleGetActiveEvents(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
   });
 });

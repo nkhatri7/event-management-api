@@ -58,6 +58,10 @@ describe("createVenue", () => {
 });
 
 describe("getAllVenues", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("Should return an empty array when no venues exist", async () => {
     const mockQueryResult = getMockQueryResult([]);
     const mockPool = new Pool();
@@ -139,6 +143,10 @@ describe("getAllVenues", () => {
 });
 
 describe("getVenue", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("Should return the venue with the given ID", async () => {
     const venueId = 1;
     const mockQueryResult = getMockQueryResult([
@@ -175,6 +183,10 @@ describe("getVenue", () => {
 });
 
 describe("updateVenue", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("Should return the venue object with the updated values", async () => {
     const venueId = 1;
     const mockQueryResult = getMockQueryResult([

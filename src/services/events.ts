@@ -81,6 +81,16 @@ export const createEvent = async (payload: EventPayload): Promise<Event> => {
 };
 
 /**
+ * Gets all the events from the event table in the database.
+ * @returns An array of all events in the database.
+ */
+export const getAllEvents = async (): Promise<Event[]> => {
+  const query: QueryConfig = { text: "SELECT * FROM event" };
+  const queryResult = await pool.query(query);
+  return queryResult.rows.map((row) => getEventFromQueryResultRow(row));
+};
+
+/**
  * Extracts the relevant event data from the given query result row.
  * @param queryResultRow A row from the query result.
  * @returns An event object with the data from the query result row.

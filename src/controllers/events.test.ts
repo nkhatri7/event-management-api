@@ -4,6 +4,7 @@ import * as authUtils from "../utils/auth";
 import {
   handleGetAllEvents,
   handleGetEvent,
+  handleGetVenueEvents,
   handleNewEvent,
 } from "./events";
 import { StatusError } from "../utils/StatusError";
@@ -377,6 +378,46 @@ describe("handleGetEvent", () => {
       isCancelled: false,
     });
     await handleGetEvent(mockRequest as Request, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(200);
+  });
+});
+
+describe("handleGetVenueEvents", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should send a status code of 401 if the request is unauthenticated", async () => {
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+    };
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    await handleGetVenueEvents(
+      mockRequest as Request,
+      mockResponse as Response
+    );
+    expect(mockResponse.status).toBeCalledWith(401);
+  });
+
+  it("Should send a status code of 200 if the request is authenticated", async () => {
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+      query: { uid: "1" },
+    };
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(eventService, "getVenueEvents").mockResolvedValue([]);
+    await handleGetVenueEvents(
+      mockRequest as Request,
+      mockResponse as Response
+    );
     expect(mockResponse.status).toBeCalledWith(200);
   });
 });

@@ -6,6 +6,7 @@ import {
   createEvent,
   getAllEvents,
   getEvent,
+  getVenueEvents,
   isTimeSlotAvailable,
 } from "../services/events";
 import { StatusError } from "../utils/StatusError";
@@ -59,5 +60,16 @@ export const handleGetEvent = safeHandler(
     const { id } = req.params;
     const event = await getEvent(parseInt(id));
     res.status(200).json(event);
+  }
+);
+
+export const handleGetVenueEvents = safeHandler(
+  async (req: Request, res: Response) => {
+    if(!isAuthorised(req)) {
+      throw new StatusError(401, "Unauthorised");
+    }
+    const { id } = req.params;
+    const events = await getVenueEvents(parseInt(id));
+    res.status(200).json(events);
   }
 );

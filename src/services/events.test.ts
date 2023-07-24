@@ -7,6 +7,7 @@ import {
   formatNumber,
   getAllEvents,
   getDateIntervals,
+  getEvent,
   getEventFromQueryResultRow,
   isTimeSlotAvailable,
 } from "./events";
@@ -281,6 +282,46 @@ describe("getAllEvents", () => {
         isCancelled: false,
       },
     ]);
+  });
+});
+
+describe("getEvent", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should throw an error if an event with the given ID doesn't exist", async () => {
+    const mockQueryResult = getMockQueryResult([]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(async () => await getEvent(1)).rejects.toThrowError();
+  });
+
+  it("Should return an event with the given ID if it exists", async () => {
+    const mockQueryResult = getMockQueryResult([{
+      id: 1,
+      user_id: 1,
+      venue_id: 1,
+      date: "2023-01-01",
+      start_time: 7,
+      end_time: 11,
+      guests: 100,
+      is_cancelled: false,
+    }]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getEvent(1)).toEqual({
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: 1,
+      month: 1,
+      year: 2023,
+      startTime: 7,
+      endTime: 11,
+      guests: 100,
+      isCancelled: false,
+    });
   });
 });
 

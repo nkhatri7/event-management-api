@@ -255,9 +255,9 @@ describe("handleGetVenue", () => {
   });
 
   it("Should send a status code of 404 if a venue with the given ID doesn't exist", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
-    } as Request;
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -265,14 +265,14 @@ describe("handleGetVenue", () => {
     jest.spyOn(venueService, "getVenue").mockImplementationOnce(() => {
       throw new StatusError(404, "Venue doesn't exist");
     });
-    await handleGetVenue(mockRequest, mockResponse as Response);
+    await handleGetVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(404);
   });
 
   it("Should send a status code of 200 if the venue with the given ID exists", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
-    } as Request;
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -286,7 +286,7 @@ describe("handleGetVenue", () => {
       capacity: 100,
       hourlyRate: 50,
     });
-    await handleGetVenue(mockRequest, mockResponse as Response);
+    await handleGetVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
   });
 });
@@ -297,71 +297,71 @@ describe("handleUpdateVenue", () => {
   });
 
   it("Should send a status code of 400 if the capacity is not in the request body", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
       body: { hourlyRate: 60 },
-    } as Request;
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
 
   it("Should send a status code of 400 if the hourly rate is not in the request body", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
       body: { capacity: 120 },
-    } as Request;
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
 
   it("Should send a status code of 400 if the hourly rate is not in the request body", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
       body: { capacity: 120 },
-    } as Request;
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
 
   it("Should send a status code of 401 if the request is unauthenticated", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
       body: {
         userId: 1,
         capacity: 120,
         hourlyRate: 60,
       },
-    } as Request;
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
     jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
-    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
 
   it("Should send a status code of 403 if the user making the request is not an admin", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
       body: {
         userId: 1,
         capacity: 120,
         hourlyRate: 60,
       },
-    } as Request;
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -375,19 +375,19 @@ describe("handleUpdateVenue", () => {
       password: "hashedpassword",
       isAdmin: false,
     });
-    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(403);
   });
 
   it("Should send a status code of 404 if a venue with the given ID doesn't exist", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
       body: {
         userId: 1,
         capacity: 120,
         hourlyRate: 60,
       },
-    } as Request;
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -404,19 +404,19 @@ describe("handleUpdateVenue", () => {
     jest.spyOn(venueService, "updateVenue").mockImplementationOnce(() => {
       throw new StatusError(404, "Venue doesn't exist");
     });
-    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(404);
   });
 
   it("Should send a status code of 200 if the user making the request is an admin", async () => {
-    const mockRequest = {
-      params: { id: "1" } as unknown,
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
       body: {
         userId: 1,
         capacity: 120,
         hourlyRate: 60,
       },
-    } as Request;
+    };
     const mockResponse: Partial<Response> = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -439,7 +439,7 @@ describe("handleUpdateVenue", () => {
       capacity: 120,
       hourlyRate: 60,
     });
-    await handleUpdateVenue(mockRequest, mockResponse as Response);
+    await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
   });
 });

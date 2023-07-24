@@ -2,6 +2,7 @@ import { QueryConfig, QueryResultRow } from "pg";
 import { Event } from "../models/Event";
 import { pool } from "../database";
 import { getVenueFromQueryResultRow } from "./venues";
+import { StatusError } from "../utils/StatusError";
 
 export type EventPayload = Omit<Event, "id" | "isCancelled">;
 interface DateIntervals {
@@ -88,6 +89,23 @@ export const getAllEvents = async (): Promise<Event[]> => {
   const query: QueryConfig = { text: "SELECT * FROM event" };
   const queryResult = await pool.query(query);
   return queryResult.rows.map((row) => getEventFromQueryResultRow(row));
+};
+
+/**
+ * Gets the event with the given ID from the database.
+ * @param id The ID of the event.
+ * @returns An event object with the given ID.
+ */
+export const getEvent = async (id: number): Promise<Event> => {
+  const query: QueryConfig = {
+    text: "SELECT * FROM event WHERE id = $1",
+    values: [id],
+  };
+  const queryResult = await pool.query(query);
+  if (queryResult.rowCount === 0) {
+    throw new StatusError(400, `Event with ID ${id} doesn't exist`);
+  }
+  return getEventFromQueryResultRow(queryResult.rows[0]);
 };
 
 /**

@@ -137,7 +137,8 @@ export const getUserEvents = async (id: number): Promise<Event[]> => {
 };
 
 /**
- * Gets all the events from the database that are not cancelled.
+ * Gets all the events from the database that are not cancelled are not in the
+ * past.
  * @returns An array of the active events.
  */
 export const getActiveEvents = async (): Promise<Event[]> => {
@@ -146,7 +147,10 @@ export const getActiveEvents = async (): Promise<Event[]> => {
     values: [false],
   };
   const queryResult = await pool.query(query);
-  return queryResult.rows.map((row) => getEventFromQueryResultRow(row));
+  const uncancelledEvents = queryResult.rows.map((row) => (
+    getEventFromQueryResultRow(row)
+  ));
+  return uncancelledEvents.filter((event) => !hasEventHappened(event));
 };
 
 /**
@@ -183,6 +187,19 @@ export const getEventFromQueryResultRow = (
     guests,
     isCancelled
   };
+};
+
+/**
+ * Checks if an event has occurred.
+ * @param event The event being checked.
+ * @returns `true` if the current time is past the event's start time, `false`
+ * otherwise.
+ */
+export const hasEventHappened = (event: Event): boolean => {
+  const now = new Date();
+  const { day, month, year, startTime } = event;
+  const eventTime = new Date(year, month - 1, day, startTime);
+  return now > eventTime;
 };
 
 /**

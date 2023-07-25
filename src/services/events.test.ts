@@ -12,6 +12,7 @@ import {
   getEventFromQueryResultRow,
   getUserEvents,
   getVenueEvents,
+  hasEventHappened,
   isTimeSlotAvailable,
 } from "./events";
 import { getMockQueryResult } from "../mocks/database";
@@ -514,7 +515,8 @@ describe("getUserEvents", () => {
   });
 });
 
-describe("getAllEvents", () => {
+describe("getActiveEvents", () => {
+  const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -526,12 +528,18 @@ describe("getAllEvents", () => {
     expect(await getActiveEvents()).toEqual([]);
   });
 
-  it("Should return an array of one event when there is one active event", async () => {
+  it("Should return an array of one event when there is one event that is not cancelled and not in the past", async () => {
+    const eventDate = new Date(Date.now() + ONE_WEEK);
+    const eventDateString = formatDate(
+      eventDate.getDate(),
+      eventDate.getMonth() + 1,
+      eventDate.getFullYear()
+    );
     const mockQueryResult = getMockQueryResult([{
       id: 1,
       user_id: 1,
       venue_id: 1,
-      date: "2023-01-01",
+      date: eventDateString,
       start_time: 7,
       end_time: 11,
       guests: 100,
@@ -543,9 +551,9 @@ describe("getAllEvents", () => {
       id: 1,
       userId: 1,
       venueId: 1,
-      day: 1,
-      month: 1,
-      year: 2023,
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1,
+      year: eventDate.getFullYear(),
       startTime: 7,
       endTime: 11,
       guests: 100,
@@ -553,13 +561,19 @@ describe("getAllEvents", () => {
     }]);
   });
 
-  it("Should return an array of two events when there are two active events", async () => {
+  it("Should return an array of two events when there are two events that are not cancelled and not in the past", async () => {
+    const eventDate = new Date(Date.now() + ONE_WEEK);
+    const eventDateString = formatDate(
+      eventDate.getDate(),
+      eventDate.getMonth() + 1,
+      eventDate.getFullYear()
+    );
     const mockQueryResult = getMockQueryResult([
       {
         id: 1,
         user_id: 1,
         venue_id: 1,
-        date: "2023-01-01",
+        date: eventDateString,
         start_time: 7,
         end_time: 11,
         guests: 100,
@@ -569,7 +583,7 @@ describe("getAllEvents", () => {
         id: 2,
         user_id: 1,
         venue_id: 1,
-        date: "2023-01-02",
+        date: eventDateString,
         start_time: 7,
         end_time: 11,
         guests: 100,
@@ -583,9 +597,9 @@ describe("getAllEvents", () => {
         id: 1,
         userId: 1,
         venueId: 1,
-        day: 1,
-        month: 1,
-        year: 2023,
+        day: eventDate.getDate(),
+        month: eventDate.getMonth() + 1,
+        year: eventDate.getFullYear(),
         startTime: 7,
         endTime: 11,
         guests: 100,
@@ -595,9 +609,84 @@ describe("getAllEvents", () => {
         id: 2,
         userId: 1,
         venueId: 1,
-        day: 2,
-        month: 1,
-        year: 2023,
+        day: eventDate.getDate(),
+        month: eventDate.getMonth() + 1,
+        year: eventDate.getFullYear(),
+        startTime: 7,
+        endTime: 11,
+        guests: 100,
+        isCancelled: false,
+      },
+    ]);
+  });
+
+  it("Should return an empty array when there is one event that is not cancelled but in the past", async () => {
+    const eventDate = new Date(Date.now() - ONE_WEEK);
+    const eventDateString = formatDate(
+      eventDate.getDate(),
+      eventDate.getMonth() + 1,
+      eventDate.getFullYear()
+    );
+    const mockQueryResult = getMockQueryResult([{
+      id: 1,
+      user_id: 1,
+      venue_id: 1,
+      date: eventDateString,
+      start_time: 7,
+      end_time: 11,
+      guests: 100,
+      is_cancelled: false,
+    }]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getActiveEvents()).toEqual([]);
+  });
+
+  it("Should return an array of one event when there are two events that are both not cancelled but one is in the past", async () => {
+    const eventDate = new Date(Date.now() + ONE_WEEK);
+    const eventDateString = formatDate(
+      eventDate.getDate(),
+      eventDate.getMonth() + 1,
+      eventDate.getFullYear()
+    );
+    const pastEventDate = new Date(Date.now() - ONE_WEEK);
+    const pastEventDateString = formatDate(
+      pastEventDate.getDate(),
+      pastEventDate.getMonth() + 1,
+      pastEventDate.getFullYear()
+    );
+    const mockQueryResult = getMockQueryResult([
+      {
+        id: 1,
+        user_id: 1,
+        venue_id: 1,
+        date: pastEventDateString,
+        start_time: 7,
+        end_time: 11,
+        guests: 100,
+        is_cancelled: false,
+      },
+      {
+        id: 2,
+        user_id: 1,
+        venue_id: 1,
+        date: eventDateString,
+        start_time: 7,
+        end_time: 11,
+        guests: 100,
+        is_cancelled: false,
+      },
+    ]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await getActiveEvents()).toEqual([
+      {
+        id: 2,
+        userId: 1,
+        venueId: 1,
+        day: eventDate.getDate(),
+        month: eventDate.getMonth() + 1,
+        year: eventDate.getFullYear(),
         startTime: 7,
         endTime: 11,
         guests: 100,
@@ -762,6 +851,114 @@ describe("getEventFromQueryResultRow", () => {
     expect(() => getEventFromQueryResultRow(mockQueryResult.rows[0]))
       .not
       .toThrowError();
+  });
+});
+
+describe("hasEventHappened", () => {
+  const ONE_HOUR = 60 * 60 * 1000;
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+  const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+  it("Should return true if the event was one day ago", () => {
+    const eventDate = new Date(Date.now() - ONE_DAY);
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1,
+      year: eventDate.getFullYear(),
+      startTime: 18,
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    expect(hasEventHappened(event)).toBe(true);
+  });
+
+  it("Should return true if the event was one week ago", () => {
+    const eventDate = new Date(Date.now() - ONE_WEEK);
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1,
+      year: eventDate.getFullYear(),
+      startTime: 18,
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    expect(hasEventHappened(event)).toBe(true);
+  });
+
+  it("Should return true if the event started one hour ago", () => {
+    const eventDate = new Date(Date.now() - ONE_HOUR);
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1,
+      year: eventDate.getFullYear(),
+      startTime: eventDate.getHours(),
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    expect(hasEventHappened(event)).toBe(true);
+  });
+
+  it("Should return false if the event starts in an hour", () => {
+    const eventDate = new Date(Date.now() + ONE_HOUR);
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1,
+      year: eventDate.getFullYear(),
+      startTime: eventDate.getHours(),
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    expect(hasEventHappened(event)).toBe(false);
+  });
+
+  it("Should return false if the event is tomorrow", () => {
+    const eventDate = new Date(Date.now() + ONE_DAY);
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1,
+      year: eventDate.getFullYear(),
+      startTime: eventDate.getHours(),
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    expect(hasEventHappened(event)).toBe(false);
+  });
+
+  it("Should return false if the event is one week away", () => {
+    const eventDate = new Date(Date.now() + ONE_WEEK);
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1,
+      year: eventDate.getFullYear(),
+      startTime: eventDate.getHours(),
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    expect(hasEventHappened(event)).toBe(false);
   });
 });
 

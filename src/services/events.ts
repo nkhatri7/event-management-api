@@ -147,10 +147,9 @@ export const getActiveEvents = async (): Promise<Event[]> => {
     values: [false],
   };
   const queryResult = await pool.query(query);
-  const uncancelledEvents = queryResult.rows.map((row) => (
-    getEventFromQueryResultRow(row)
-  ));
-  return uncancelledEvents.filter((event) => !hasEventHappened(event));
+  return queryResult.rows
+    .map((row) => getEventFromQueryResultRow(row))
+    .filter((event) => !hasEventHappened(event));
 };
 
 /**

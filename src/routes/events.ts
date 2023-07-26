@@ -6,6 +6,7 @@ import {
   handleGetUserEvents,
   handleGetVenueEvents,
   handleNewEvent,
+  handleUpdateEvent,
 } from "../controllers/events";
 
 const router = Router();
@@ -15,5 +16,6 @@ router.route("/:id").get(handleGetEvent);
 router.route("/venue/:id").get(handleGetVenueEvents);
 router.route("/user/:id").get(handleGetUserEvents);
 router.route("/active").get(handleGetActiveEvents);
+router.route("/:id").put(handleUpdateEvent);
 
 export default router;

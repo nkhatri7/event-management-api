@@ -10,6 +10,7 @@ import {
   getUserEvents,
   getVenueEvents,
   isTimeSlotAvailable,
+  updateEvent,
 } from "../services/events";
 import { StatusError } from "../utils/StatusError";
 import { isAuthorised } from "../utils/auth";
@@ -29,8 +30,8 @@ export const handleNewEvent = safeHandler(
     if(!isAuthorised(req)) {
       throw new StatusError(401, "Unauthorised");
     }
-    if (!userId || !venueId || !day || !month || !year || !startTime
-        || !endTime || !guests) {
+    if (!userId || !venueId || !day || !month || !year || !startTime || !endTime
+        || !guests) {
       throw new StatusError(400, "Missing parameters");
     }
     if (!(await isTimeSlotAvailable(req.body as EventPayload))) {
@@ -94,5 +95,46 @@ export const handleGetActiveEvents = safeHandler(
     }
     const events = await getActiveEvents();
     res.status(200).json(events);
+  }
+);
+
+export const handleUpdateEvent = safeHandler(
+  async (req: Request, res: Response) => {
+    if(!isAuthorised(req)) {
+      throw new StatusError(401, "Unauthorised");
+    }
+    const {
+      userId,
+      venueId,
+      day,
+      month,
+      year,
+      startTime,
+      endTime,
+      guests
+    }: EventPayload = req.body;
+    if (!userId || !venueId || !day || !month || !year || !startTime || !endTime
+        || !guests) {
+      throw new StatusError(400, "Missing parameters");
+    }
+    const { id } = req.params;
+    const event = await getEvent(parseInt(id));
+    if (userId !== event.userId) {
+      throw new StatusError(403, "Unauthorised - not the user's event");
+    }
+    if (event.isCancelled) {
+      throw new StatusError(400, "Cannot update cancelled event");
+    }
+    if (!(await isTimeSlotAvailable(req.body as EventPayload))) {
+      throw new StatusError(400, "Time slot isn't available");
+    }
+    if (!(await canFitGuests(venueId, guests))) {
+      throw new StatusError(400, "Venue cannot fit required guests");
+    }
+    const updatedEvent = await updateEvent(
+      parseInt(id),
+      req.body as EventPayload
+    );
+    res.status(200).json(updatedEvent);
   }
 );

@@ -14,6 +14,7 @@ import {
   getVenueEvents,
   hasEventHappened,
   isTimeSlotAvailable,
+  updateEvent,
 } from "./events";
 import { getMockQueryResult } from "../mocks/database";
 import { Event } from "../models/Event";
@@ -693,6 +694,42 @@ describe("getActiveEvents", () => {
         isCancelled: false,
       },
     ]);
+  });
+});
+
+describe("updateEvent", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should return an event with the new data passed through", async () => {
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: 7,
+      month: 1,
+      year: 2023,
+      startTime: 17,
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    const mockQueryResult = getMockQueryResult([{
+      id: 1,
+      user_id: 1,
+      venue_id: 1,
+      date: "2023-01-07",
+      start_time: 17,
+      end_time: 22,
+      guests: 50,
+      is_cancelled: false,
+    }]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, isCancelled, ...payload } = event;
+    expect(await updateEvent(id, payload)).toEqual(event);
   });
 });
 

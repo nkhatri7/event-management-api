@@ -60,6 +60,19 @@ export const canFitGuests = async (
 };
 
 /**
+ * Checks if an event has occurred.
+ * @param event The event being checked.
+ * @returns `true` if the current time is past the event's start time, `false`
+ * otherwise.
+ */
+export const hasEventHappened = (event: Event): boolean => {
+  const now = new Date();
+  const { day, month, year, startTime } = event;
+  const eventTime = new Date(year, month - 1, day, startTime);
+  return now > eventTime;
+};
+
+/**
  * Creates an event in the database with the data in the given payload.
  * @param payload The event information.
  * @returns An event object with an ID and the given event data.
@@ -103,7 +116,7 @@ export const getEvent = async (id: number): Promise<Event> => {
   };
   const queryResult = await pool.query(query);
   if (queryResult.rowCount === 0) {
-    throw new StatusError(400, `Event with ID ${id} doesn't exist`);
+    throw new StatusError(404, `Event with ID ${id} doesn't exist`);
   }
   return getEventFromQueryResultRow(queryResult.rows[0]);
 };
@@ -153,6 +166,26 @@ export const getActiveEvents = async (): Promise<Event[]> => {
 };
 
 /**
+ * Updates the event with the given ID with new values from the given payload.
+ * @param id The ID of the event.
+ * @param payload The new event data.
+ * @returns The updated event object.
+ */
+export const updateEvent = async (
+  id: number,
+  payload: EventPayload
+): Promise<Event> => {
+  const { day, month, year, startTime, endTime, guests } = payload;
+  const eventDate = formatDate(day, month, year);
+  const query: QueryConfig = {
+    text: "UPDATE event SET date = $1, start_time = $2, end_time = $3, guests = $4 WHERE id = $5 RETURNING *",
+    values: [eventDate, startTime, endTime, guests, id],
+  };
+  const queryResult = await pool.query(query);
+  return getEventFromQueryResultRow(queryResult.rows[0]);
+};
+
+/**
  * Extracts the relevant event data from the given query result row.
  * @param queryResultRow A row from the query result.
  * @returns An event object with the data from the query result row.
@@ -186,19 +219,6 @@ export const getEventFromQueryResultRow = (
     guests,
     isCancelled
   };
-};
-
-/**
- * Checks if an event has occurred.
- * @param event The event being checked.
- * @returns `true` if the current time is past the event's start time, `false`
- * otherwise.
- */
-export const hasEventHappened = (event: Event): boolean => {
-  const now = new Date();
-  const { day, month, year, startTime } = event;
-  const eventTime = new Date(year, month - 1, day, startTime);
-  return now > eventTime;
 };
 
 /**

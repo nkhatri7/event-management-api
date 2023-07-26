@@ -186,6 +186,20 @@ export const updateEvent = async (
 };
 
 /**
+ * Cancels the event with the given ID.
+ * @param id The ID of the event.
+ * @returns The updated event object.
+ */
+export const cancelEvent = async (id: number): Promise<Event> => {
+  const query: QueryConfig = {
+    text: "UPDATE event SET is_cancelled = $1 WHERE id = $2 RETURNING *",
+    values: [true, id],
+  };
+  const queryResult = await pool.query(query);
+  return getEventFromQueryResultRow(queryResult.rows[0]);
+};
+
+/**
  * Extracts the relevant event data from the given query result row.
  * @param queryResultRow A row from the query result.
  * @returns An event object with the data from the query result row.

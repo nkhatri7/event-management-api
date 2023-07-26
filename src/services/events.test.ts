@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import {
   EventPayload,
   canFitGuests,
+  cancelEvent,
   createEvent,
   formatDate,
   formatNumber,
@@ -730,6 +731,40 @@ describe("updateEvent", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, isCancelled, ...payload } = event;
     expect(await updateEvent(id, payload)).toEqual(event);
+  });
+});
+
+describe("cancelEvent", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should return the event object with the given ID and it should be cancelled", async () => {
+    const id = 1;
+    const mockQueryResult = getMockQueryResult([{
+      id,
+      user_id: 1,
+      venue_id: 1,
+      date: "2023-01-01",
+      start_time: 17,
+      end_time: 22,
+      guests: 50,
+      is_cancelled: true,
+    }]);
+    const mockPool = new Pool();
+    (mockPool.query as jest.Mock).mockResolvedValue(mockQueryResult);
+    expect(await cancelEvent(id)).toEqual({
+      id,
+      userId: 1,
+      venueId: 1,
+      day: 1,
+      month: 1,
+      year: 2023,
+      startTime: 17,
+      endTime: 22,
+      guests: 50,
+      isCancelled: true,
+    });
   });
 });
 

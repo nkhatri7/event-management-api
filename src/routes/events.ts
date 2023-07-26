@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  handleCancelEvent,
   handleGetActiveEvents,
   handleGetAllEvents,
   handleGetEvent,
@@ -17,5 +18,6 @@ router.route("/venue/:id").get(handleGetVenueEvents);
 router.route("/user/:id").get(handleGetUserEvents);
 router.route("/active").get(handleGetActiveEvents);
 router.route("/:id").put(handleUpdateEvent);
+router.route("/:id/cancel").patch(handleCancelEvent);
 
 export default router;

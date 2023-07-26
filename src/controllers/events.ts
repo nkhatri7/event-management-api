@@ -3,6 +3,7 @@ import { safeHandler } from "../middleware/wrapper";
 import {
   EventPayload,
   canFitGuests,
+  cancelEvent,
   createEvent,
   getActiveEvents,
   getAllEvents,
@@ -135,6 +136,24 @@ export const handleUpdateEvent = safeHandler(
       parseInt(id),
       req.body as EventPayload
     );
+    res.status(200).json(updatedEvent);
+  }
+);
+
+export const handleCancelEvent = safeHandler(
+  async (req: Request, res: Response) => {
+    if(!isAuthorised(req)) {
+      throw new StatusError(401, "Unauthorised");
+    }
+    if (!req.body.userId) {
+      throw new StatusError(400, "Missing parameters");
+    }
+    const { id } = req.params;
+    const event = await getEvent(parseInt(id));
+    if (req.body.userId !== event.userId) {
+      throw new StatusError(403, "Unauthorised - not the user's event");
+    }
+    const updatedEvent = await cancelEvent(parseInt(id));
     res.status(200).json(updatedEvent);
   }
 );

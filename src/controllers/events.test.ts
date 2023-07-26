@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as eventService from "../services/events";
 import * as authUtils from "../utils/auth";
 import {
+  handleCancelEvent,
   handleGetActiveEvents,
   handleGetAllEvents,
   handleGetEvent,
@@ -11,6 +12,7 @@ import {
   handleUpdateEvent,
 } from "./events";
 import { StatusError } from "../utils/StatusError";
+import { Event } from "../models/Event";
 
 jest.mock("../services/venues");
 jest.mock("../utils/auth");
@@ -841,6 +843,96 @@ describe("handleUpdateEvent", () => {
       isCancelled: false,
     });
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(200);
+  });
+});
+
+describe("handleCancelEvent", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("Should send a status code of 401 if the request is unauthenticated", async () => {
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+    };
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    await handleCancelEvent(mockRequest as Request, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(401);
+  });
+
+  it("Should send a status code of 400 if the request body doesn't have a user ID", async () => {
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+      body: {},
+    };
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    await handleCancelEvent(mockRequest as Request, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(400);
+  });
+
+  it("Should send a status code of 403 if the given user ID is not the same as the user ID of the event", async () => {
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+      body: { userId: 1 },
+    };
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(eventService, "getEvent").mockResolvedValue({
+      id: 1,
+      userId: 2,
+      venueId: 1,
+      day: 1,
+      month: 1,
+      year: 2023,
+      startTime: 17,
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    });
+    await handleCancelEvent(mockRequest as Request, mockResponse as Response);
+    expect(mockResponse.status).toBeCalledWith(403);
+  });
+
+  it("Should send a status code of 200 if the request is authenticated and the user ID is the same as the user ID from the event", async () => {
+    const mockRequest: Partial<Request> = {
+      params: { id: "1" },
+      body: { userId: 1 },
+    };
+    const mockResponse: Partial<Response> = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    const event: Event = {
+      id: 1,
+      userId: 1,
+      venueId: 1,
+      day: 1,
+      month: 1,
+      year: 2023,
+      startTime: 17,
+      endTime: 22,
+      guests: 50,
+      isCancelled: false,
+    };
+    jest.spyOn(eventService, "getEvent").mockResolvedValue(event);
+    jest.spyOn(eventService, "cancelEvent").mockResolvedValue({
+      ...event,
+      isCancelled: true,
+    });
+    await handleCancelEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
   });
 });

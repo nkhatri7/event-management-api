@@ -141,7 +141,7 @@ describe("handleNewVenue", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleNewVenue(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -161,7 +161,7 @@ describe("handleNewVenue", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
       id: 1,
       firstName: "some first name",
@@ -189,7 +189,7 @@ describe("handleNewVenue", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
       id: 1,
       firstName: "some first name",
@@ -348,7 +348,7 @@ describe("handleUpdateVenue", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleUpdateVenue(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -366,7 +366,7 @@ describe("handleUpdateVenue", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
       id: 1,
       firstName: "some first name",
@@ -392,7 +392,7 @@ describe("handleUpdateVenue", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
       id: 1,
       firstName: "some first name",
@@ -421,7 +421,7 @@ describe("handleUpdateVenue", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(authUtils, "getUserFromId").mockResolvedValue({
       id: 1,
       firstName: "some first name",

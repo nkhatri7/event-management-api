@@ -8,7 +8,7 @@ import {
   updateVenue,
 } from "../services/venues";
 import { safeHandler } from "../middleware/wrapper";
-import { getUserFromId, isAuthorised } from "../utils/auth";
+import { getUserFromId, isAuthenticated } from "../utils/auth";
 import { StatusError } from "../utils/StatusError";
 
 export const handleNewVenue = safeHandler(
@@ -24,7 +24,7 @@ export const handleNewVenue = safeHandler(
     if (!name || !address || !postcode || !state || !capacity || !hourlyRate) {
       throw new StatusError(400, "Missing parameters");
     }
-    if (!isAuthorised(req)) {
+    if (!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const user = await getUserFromId(req.body.userId);
@@ -65,7 +65,7 @@ export const handleUpdateVenue = safeHandler(
     if (!id || !capacity || !hourlyRate) {
       throw new StatusError(400, "Missing parameters");
     }
-    if (!isAuthorised(req)) {
+    if (!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const user = await getUserFromId(req.body.userId);

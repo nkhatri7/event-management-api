@@ -39,7 +39,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -60,7 +60,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -81,7 +81,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -102,7 +102,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -123,7 +123,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -144,7 +144,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -165,7 +165,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -186,7 +186,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -207,7 +207,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -229,7 +229,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "isTimeSlotAvailable").mockResolvedValue(false);
     await handleNewEvent(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
@@ -252,7 +252,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "isTimeSlotAvailable").mockResolvedValue(true);
     jest.spyOn(eventService, "canFitGuests").mockResolvedValue(false);
     await handleNewEvent(mockRequest, mockResponse as Response);
@@ -276,7 +276,7 @@ describe("handleNewEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "isTimeSlotAvailable").mockResolvedValue(true);
     jest.spyOn(eventService, "canFitGuests").mockResolvedValue(true);
     jest.spyOn(eventService, "createEvent").mockResolvedValue({
@@ -307,7 +307,7 @@ describe("handleGetAllEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleGetAllEvents(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -318,7 +318,7 @@ describe("handleGetAllEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getAllEvents").mockResolvedValue([]);
     await handleGetAllEvents(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
@@ -338,7 +338,7 @@ describe("handleGetEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleGetEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -352,7 +352,7 @@ describe("handleGetEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockImplementationOnce(() => {
       throw new StatusError(404, "Event with ID 1 doesn't exist");
     });
@@ -369,7 +369,7 @@ describe("handleGetEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockResolvedValue({
       id: 1,
       userId: 1,
@@ -400,7 +400,7 @@ describe("handleGetVenueEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleGetVenueEvents(
       mockRequest as Request,
       mockResponse as Response
@@ -417,7 +417,7 @@ describe("handleGetVenueEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getVenueEvents").mockResolvedValue([]);
     await handleGetVenueEvents(
       mockRequest as Request,
@@ -440,7 +440,7 @@ describe("handleGetUserEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleGetUserEvents(
       mockRequest as Request,
       mockResponse as Response
@@ -457,7 +457,7 @@ describe("handleGetUserEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getUserEvents").mockResolvedValue([]);
     await handleGetUserEvents(
       mockRequest as Request,
@@ -478,7 +478,7 @@ describe("handleGetActiveEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleGetActiveEvents(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -489,7 +489,7 @@ describe("handleGetActiveEvents", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getActiveEvents").mockResolvedValue([]);
     await handleGetActiveEvents(mockRequest, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(200);
@@ -509,7 +509,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -531,7 +531,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -553,7 +553,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -575,7 +575,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -597,7 +597,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -619,7 +619,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -641,7 +641,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -663,7 +663,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -685,7 +685,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleUpdateEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -709,7 +709,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockResolvedValue({
       id: 1,
       ...payload,
@@ -739,7 +739,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockResolvedValue({
       id: 1,
       ...payload,
@@ -768,7 +768,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockResolvedValue({
       id: 1,
       ...payload,
@@ -798,7 +798,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockResolvedValue({
       id: 1,
       ...payload,
@@ -829,7 +829,7 @@ describe("handleUpdateEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockResolvedValue({
       id: 1,
       ...payload,
@@ -860,7 +860,7 @@ describe("handleCancelEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(false);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(false);
     await handleCancelEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(401);
   });
@@ -874,7 +874,7 @@ describe("handleCancelEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     await handleCancelEvent(mockRequest as Request, mockResponse as Response);
     expect(mockResponse.status).toBeCalledWith(400);
   });
@@ -888,7 +888,7 @@ describe("handleCancelEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     jest.spyOn(eventService, "getEvent").mockResolvedValue({
       id: 1,
       userId: 2,
@@ -914,7 +914,7 @@ describe("handleCancelEvent", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(authUtils, "isAuthorised").mockReturnValue(true);
+    jest.spyOn(authUtils, "isAuthenticated").mockReturnValue(true);
     const event: Event = {
       id: 1,
       userId: 1,

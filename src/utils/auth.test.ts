@@ -5,7 +5,7 @@ import {
   extractTokenFromHeader,
   getUserFromId,
   getUserFromQueryResult,
-  isAuthorised,
+  isAuthenticated,
   isTokenExpired,
 } from "./auth";
 import { getMockQueryResult } from "../mocks/database";
@@ -32,7 +32,7 @@ jest.mock("pg", () => {
 
 const ONE_WEEK = 7 * 24 * 60 * 60;
 
-describe("isAuthorised", () => {
+describe("isAuthenticated", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -42,7 +42,7 @@ describe("isAuthorised", () => {
       headers: {},
       body: {},
     } as Request;
-    expect(isAuthorised(mockRequest)).toBe(false);
+    expect(isAuthenticated(mockRequest)).toBe(false);
   });
 
   it("Should return false if the token is expired", () => {
@@ -59,7 +59,7 @@ describe("isAuthorised", () => {
       signature: "",
     };
     (jwt.decode as jest.Mock).mockReturnValue(mockJwtObject);
-    expect(isAuthorised(mockRequest)).toBe(false);
+    expect(isAuthenticated(mockRequest)).toBe(false);
   });
 
   it("Should return false if the user ID from the jwt payload doesn't match the given user ID", () => {
@@ -78,7 +78,7 @@ describe("isAuthorised", () => {
       signature: "",
     };
     (jwt.decode as jest.Mock).mockReturnValue(mockJwtObject);
-    expect(isAuthorised(mockRequest)).toBe(false);
+    expect(isAuthenticated(mockRequest)).toBe(false);
   });
 
   it("Should return true if the token isn't expired and the given user ID from the request body matches the ID in the jwt payload", () => {
@@ -98,7 +98,7 @@ describe("isAuthorised", () => {
       signature: "",
     };
     (jwt.decode as jest.Mock).mockReturnValue(mockJwtObject);
-    expect(isAuthorised(mockRequest)).toBe(true);
+    expect(isAuthenticated(mockRequest)).toBe(true);
   });
 
   it("Should return true if the token isn't expired and the given user ID from the request query params matches the ID in the jwt payload", () => {
@@ -118,7 +118,7 @@ describe("isAuthorised", () => {
       signature: "",
     };
     (jwt.decode as jest.Mock).mockReturnValue(mockJwtObject);
-    expect(isAuthorised(mockRequest as Request)).toBe(true);
+    expect(isAuthenticated(mockRequest as Request)).toBe(true);
   });
 });
 

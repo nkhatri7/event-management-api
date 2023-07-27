@@ -14,7 +14,7 @@ import {
   updateEvent,
 } from "../services/events";
 import { StatusError } from "../utils/StatusError";
-import { isAuthorised } from "../utils/auth";
+import { isAuthenticated } from "../utils/auth";
 
 export const handleNewEvent = safeHandler(
   async (req: Request, res: Response) => {
@@ -28,7 +28,7 @@ export const handleNewEvent = safeHandler(
       endTime,
       guests,
     }: EventPayload = req.body;
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     if (!userId || !venueId || !day || !month || !year || !startTime || !endTime
@@ -48,7 +48,7 @@ export const handleNewEvent = safeHandler(
 
 export const handleGetAllEvents = safeHandler(
   async (req: Request, res: Response) => {
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const events = await getAllEvents();
@@ -58,7 +58,7 @@ export const handleGetAllEvents = safeHandler(
 
 export const handleGetEvent = safeHandler(
   async (req: Request, res: Response) => {
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const { id } = req.params;
@@ -69,7 +69,7 @@ export const handleGetEvent = safeHandler(
 
 export const handleGetVenueEvents = safeHandler(
   async (req: Request, res: Response) => {
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const { id } = req.params;
@@ -80,7 +80,7 @@ export const handleGetVenueEvents = safeHandler(
 
 export const handleGetUserEvents = safeHandler(
   async (req: Request, res: Response) => {
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const { id } = req.params;
@@ -91,7 +91,7 @@ export const handleGetUserEvents = safeHandler(
 
 export const handleGetActiveEvents = safeHandler(
   async (req: Request, res: Response) => {
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const events = await getActiveEvents();
@@ -101,7 +101,7 @@ export const handleGetActiveEvents = safeHandler(
 
 export const handleUpdateEvent = safeHandler(
   async (req: Request, res: Response) => {
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     const {
@@ -142,7 +142,7 @@ export const handleUpdateEvent = safeHandler(
 
 export const handleCancelEvent = safeHandler(
   async (req: Request, res: Response) => {
-    if(!isAuthorised(req)) {
+    if(!isAuthenticated(req)) {
       throw new StatusError(401, "Unauthorised");
     }
     if (!req.body.userId) {

@@ -42,13 +42,13 @@ const generateToken = (payload: TokenPayload, secret: string): string => {
 };
 
 /**
- * Checks if the incoming request is valid by checking if the token is valid and
- * matches the user ID in the request body.
+ * Checks if the incoming request is authenticated by checking if the token is
+ * valid and matches the user ID in the request body or query parameters.
  * @param req The incoming request.
  * @returns `true` if the user making the request has a valid token and ID,
  * `false` otherwise.
  */
-export const isAuthorised = (req: Request): boolean => {
+export const isAuthenticated = (req: Request): boolean => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return false;
